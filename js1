@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <script src = "./async_1.js"></script> -->
+     <script>
+        async function loadUserDetails(username){
+            try{
+                const url = `https://dummyjson.com/products`;
+                const res  = await fetch(url);
+                const data = await  res.json();
+                for (const prod of data.products){
+                    // console.log("id = ",prod.id);
+                    // console.log("title= ",prod.title);
+                    const row = `
+                        <tr>
+                            <td>${prod.id}</td>
+                            <td>${prod.title}</td>
+                        </tr>
+                    `;
+
+                    document.getElementById("table_prod").innerHTML +=row;
+                    
+                }
+                console.log("response:",res);
+                
+            } 
+            catch(err){
+                console.log("error caught ",err);
+                
+            }
+        }
+        loadUserDetails("akshatyadav-bit");
+     </script>
+</head>
+<body>
+    <h1> products info</h1>
+    <p id = "para1"></p>
+    <table id="table_prod">
+        <th>
+            <td>ID</td>
+            <td>title</td>
+        </th>
+        
+    </table>
+</body>
+</html>
