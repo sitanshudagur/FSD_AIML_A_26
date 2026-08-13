@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Profile Finder</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: white;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            padding: 70px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 35px;
+        }
+
+        .search {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 14px;
+            font-size: 16px;
+            color: white;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #58a6ff;
+        }
+
+        button {
+            padding: 14px 22px;
+            border: none;
+            border-radius: 8px;
+            background: #238636;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2ea043;
+        }
+
+        #message {
+            text-align: center;
+            margin: 20px 0;
+            color: #f85149;
+        }
+
+        #profile {
+            display: none;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            padding: 35px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 4px solid #30363d;
+        }
+
+        #name {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .username {
+            color: #8b949e;
+        }
+
+        .bio {
+            color: #c9d1d9;
+            margin: 20px 0;
+            line-height: 1.5;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .stat {
+            flex: 1;
+            padding: 18px 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .stat span {
+            color: #8b949e;
+            font-size: 13px;
+        }
+
+        .profile-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 12px 20px;
+            background: #21262d;
+            color: white;
+            text-decoration: none;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+        }
+
+        .profile-link:hover {
+            background: #30363d;
+        }
+
+        @media (max-width: 600px) {
+            .search {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .stats {
+                gap: 8px;
+            }
+
+            .stat strong {
+                font-size: 19px;
+            }
+
+            .stat span {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>GitHub Profile Finder</h1>
+
+        <div class="search">
+            <input
+                type="text"
+                id="usernameInput"
+                placeholder="Enter GitHub username"
+            >
+
+            <button onclick="getProfile()">
+                Search
+            </button>
+        </div>
+
+        <p id="message"></p>
+
+        <div id="profile" class="card">
+
+            <img id="avatar" class="avatar" alt="GitHub Avatar">
+
+            <h2 id="name"></h2>
+
+            <p id="username" class="username"></p>
+
+            <p id="bio" class="bio"></p>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <strong id="followers">0</strong>
+                    <span>Followers</span>
+                </div>
+
+                <div class="stat">
+                    <strong id="following">0</strong>
+                    <span>Following</span>
+                </div>
+
+                <div class="stat">
+                    <strong id="repos">0</strong>
+                    <span>Repositories</span>
+                </div>
+
+            </div>
+
+            <a
+                id="profileLink"
+                class="profile-link"
+                target="_blank"
+            >
+                View GitHub Profile
+            </a>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        async function getProfile() {
+
+            const username =
+                document.getElementById("usernameInput").value.trim();
+
+            const message =
+                document.getElementById("message");
+
+            const profile =
+                document.getElementById("profile");
+
+            if (username === "") {
+
+                message.textContent =
+                    "Please enter a GitHub username.";
+
+                profile.style.display = "none";
+
+                return;
+            }
+
+            message.textContent = "Loading...";
+
+            try {
+
+                const response = await fetch(
+                    `https://api.github.com/users/${username}`
+                );
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "GitHub user not found."
+                    );
+                }
+
+                const data = await response.json();
+
+                document.getElementById("avatar").src =
+                    data.avatar_url;
+
+                document.getElementById("name").textContent =
+                    data.name || data.login;
+
+                document.getElementById("username").textContent =
+                    "@" + data.login;
+
+                document.getElementById("bio").textContent =
+                    data.bio || "No bio available";
+
+                document.getElementById("followers").textContent =
+                    data.followers;
+
+                document.getElementById("following").textContent =
+                    data.following;
+
+                document.getElementById("repos").textContent =
+                    data.public_repos;
+
+                document.getElementById("profileLink").href =
+                    data.html_url;
+
+                profile.style.display = "block";
+
+                message.textContent = "";
+
+            }
+
+            catch (error) {
+
+                profile.style.display = "none";
+
+                message.textContent =
+                    error.message;
+
+            }
+
+        }
+
+        document
+            .getElementById("usernameInput")
+            .addEventListener("keypress", function(event) {
+
+                if (event.key === "Enter") {
+                    getProfile();
+                }
+
+            });
+
+    </script>
+
+</body>
+</html>
